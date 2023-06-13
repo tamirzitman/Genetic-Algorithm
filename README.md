@@ -3,31 +3,31 @@
 
 This repository contains the implementation of a Genetic Algorithm for solving a job scheduling problem with the objective of minimizing delay cost.
 
-Problem Description
 The problem involves scheduling a set of jobs on a single machine. The objective is to minimize the total delay cost.
 Follow the instructions below to run the Python code and solve the problem.
 
-# Usage 
+# Usage
 Clone the repository to your local machine or download the script file (genetic_algorithm.py).
 
 Prepare the input data:
 
-Create a text file (input.txt) with the job details in a predefined format. Each line should represent a job and include its relevant information.
-The format for each line should be: job_id, processing_time, due_date, weight.  
+Create a text file (jobs_data.csv) with the job details in a predefined format. Each line should represent a job and include its relevant information.
+The format for each line should be: job_id, process_time, delivery_time.
 
 Example:
 ```
-Job1, 5, 10, 3
-Job2, 3, 8, 2
-Job3, 4, 6, 1
+job_id,process_time,delivery_time
+1,2,11
+2,4,20
+3,5,21
 ```
 Open a terminal or command prompt and navigate to the directory where the script is located.
 
 Run the script using the following command:
 ```
-python genetic_algorithm.py input.txt
+python genetic_algorithm.py jobs_data.csv
 ```
-The script will execute the Genetic Algorithm and output the best job schedule found, along with the corresponding delay cost.
+The script will execute the Genetic Algorithm and output the best job schedule found, along with the corresponding total delay days.
 
 Adjust the algorithm's parameters in the script (if necessary):
 
@@ -41,9 +41,3 @@ The script uses a fitness function based on the delay cost to evaluate the quali
 The algorithm employs selection, crossover, and mutation operations to evolve the population towards better solutions.
 The output includes the best job schedule found and the corresponding delay cost.
 Feel free to experiment with different input files and algorithm parameters to achieve optimal results.
-Please let me know if you need any further assistance.
-
-
-
-
-

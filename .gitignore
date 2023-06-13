@@ -1,6 +1,9 @@
 # Git local config
 *.toml
 
+#Proj Data:
+vectors_initial_data.csv
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files
