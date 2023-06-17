@@ -1,8 +1,6 @@
 # Git local config
 *.toml
 
-#Proj Data:
-vectors_initial_data.csv
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
@@ -134,3 +132,4 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+data/vectors_initial_data.csv
