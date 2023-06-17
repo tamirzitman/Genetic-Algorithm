@@ -11,7 +11,8 @@ Clone the repository to your local machine or download the script file (genetic_
 
 Prepare the input data:
 
-Create a text file (jobs_data.csv) with the job details in a predefined format. Each line should represent a job and include its relevant information.
+Create/clone the csv jobs data file, to data/jobs_data.csv with the job details in a predefined format.
+Each line should represent a job and include its relevant information.
 The format for each line should be: job_id, process_time, delivery_time.
 
 Example:
@@ -25,11 +26,11 @@ Open a terminal or command prompt and navigate to the directory where the script
 
 Run the script using the following command:
 ```
-python genetic_algorithm.py jobs_data.csv
+python genetic_algorithm.py
 ```
-The script will execute the Genetic Algorithm and output the best job schedule found, along with the corresponding total delay days.
+The script will execute the Genetic Algorithm and output the best job schedule found, where the best soultion is at the end od the output.
 
-Adjust the algorithm's parameters in the script (if necessary):
+Adjust the algorithm's variables at the top of the script (if necessary):
 
 Population size: Modify the 'population_size' variable in the script to change the size of the population.
 Mutation rate: Adjust the 'mutation_rate' variable to control the rate of mutations in the algorithm.
@@ -37,7 +38,6 @@ Mutation rate: Adjust the 'mutation_rate' variable to control the rate of mutati
 **Note: Make sure the input file is in the correct format and contains valid job details. The script assumes the input is well-formed and does not perform extensive error checking.**
 
 # Additional Information
-The script uses a fitness function based on the delay cost to evaluate the quality of each job schedule.
 The algorithm employs selection, crossover, and mutation operations to evolve the population towards better solutions.
-The output includes the best job schedule found and the corresponding delay cost.
+The output includes the best job schedule found.
 Feel free to experiment with different input files and algorithm parameters to achieve optimal results.
