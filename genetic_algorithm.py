@@ -1,4 +1,6 @@
 import random,csv,sys,os
+from operator import itemgetter
+
 
 # Script Variables:
 mutation_rate = 5 # precentage of soulutions to be mutate
@@ -17,19 +19,17 @@ hybrid_mask = get_hybrid_mask_list() #For example: [1,0,0,0,1,0,0,1,0,1]
 vectors_initial_data = "data\\vectors_initial_data.csv"
 
 # Ensures data directory exists
-file_path = vectors_initial_data
-directory = os.path.dirname(file_path)
+directory = os.path.dirname(vectors_initial_data)
 if not os.path.exists(directory):
     os.makedirs(directory)
 
 # Get the command-line arguments
-arguments = sys.argv
+# arguments = sys.argv
+# if(arguments):
+#     jobs_data = arguments[0]
+# else:
 
-if(arguments):
-    jobs_data = arguments[0]
-else:
-    jobs_data = "data\\jobs_data.csv"
-
+jobs_data = "data\\jobs_data.csv"
 
 def get_randomize_jobs(jobs_amount=10):
     jobs_list = list(range(1, jobs_amount + 1))
@@ -46,14 +46,6 @@ def generate_input_data(vectors=1):
     for _ in range(vectors):
         jobs_list = get_randomize_jobs()
         export_list(jobs_list)
-
-def read_csv_to_array(file_path=vectors_initial_data):
-    array_of_dicts = []
-    with open(file_path, 'r') as file:
-        csv_reader = csv.reader(file)
-        for row in csv_reader:
-            array_of_dicts.append({"jobs": [int(job_id) for job_id in row], "rank": None})
-    return array_of_dicts
 
 
 def get_job_process_time(job_id):
@@ -88,14 +80,53 @@ def get_total_days_late(jobs_order_list):
         if diff > 0: days_late += diff
     return days_late
 
-######################### continue from here ################
-def add_rank_to_arrays(arrays):
-    ranked_arrays = []
 
-    # for arr_object in arrays:
+def read_csv_to_array(file_path=vectors_initial_data):
+    # return array with items such as: {'jobs': [10, 2, 9, 5, 4, 1, 8, 6, 3, 7], 'day_late': 189}
+    array_of_dicts = []
+    with open(file_path, 'r') as file:
+        csv_reader = csv.reader(file)
+        vector_id = 1
+        for row in csv_reader:
+            int_arr = list(map(int, row))
+            day_late = get_total_days_late(int_arr)
+            array_of_dicts.append({"jobs": [int(job_id) for job_id in row], "day_late": day_late,"vector_id": vector_id})
+            vector_id += 1
+    return array_of_dicts
 
-    return ranked_arrays
 
+def get_ranked_array(array_of_lists):
+    ranked_array = []
+
+    # From highest value of day_late to the lowest value
+    new_array = sorted(array_of_lists, key=itemgetter('day_late'),reverse=True)
+
+    cur_day_late =new_array[0]["day_late"]
+    rank = 1
+    for item in new_array:
+        if(item["day_late"] != cur_day_late):
+            rank += 1
+        ranked_array.append({"vector_id": item["vector_id"], "rank": rank})
+        cur_day_late = item["day_late"]
+
+    return ranked_array
+
+def get_rank_sum_of__ranked_array(rank_array_of_lists):
+    sum = 0
+    for item in rank_array_of_lists:
+        sum += item["rank"]
+    return sum
+
+def get_cum_dist_array(rank_array_of_lists,rank_sum):
+    cum_dist_array = []
+    low_prob = 0
+    high_prob = 0
+    for item in rank_array_of_lists:
+        high_prob += (item["rank"]/rank_sum)
+        cum_dist_array.append({"vector_id": item["vector_id"], "low_prob": low_prob ,"high_prob": high_prob})
+        low_prob = high_prob
+
+    return cum_dist_array
 
 def encode_jobs_vector(jobs_list):
     encoded_vector = []
@@ -139,13 +170,20 @@ def get_mutate_list(jobs_list):
 ###
 # Gets the user input for the amount of initial vectors to start with:
 
-# vectors = int(input("Specify how many job vectors you want to add: "))
-# generate_input_data(vectors)
+vectors = int(input("Specify how many job vectors you want to add: "))
+generate_input_data(vectors)
 
 main_arr = read_csv_to_array()
-print(f"Before{main_arr}")
-# add_rank_to_arrays(main_arr)
-# print(f"After{main_arr}")
+print(f"Original Array: {main_arr}")
+
+ranked = get_ranked_array(main_arr)
+print(f"Ranked Array: {ranked}")
+
+rank_sum = get_rank_sum_of__ranked_array(ranked)
+print(f"Rank Sum: {rank_sum}")
+
+cum_distributed = get_cum_dist_array(ranked,rank_sum)
+print(f"Cumulative Distributed array: {cum_distributed}")
 
 
 ###
@@ -166,4 +204,3 @@ print(f"Before{main_arr}")
 # decoded_list = decode_jobs_vector(encoded_list)
 # print(f"Decoded list: {decoded_list}")
 ## Expect > Decoded list: [2, 1, 6, 4, 5, 3]
-
