@@ -1,4 +1,4 @@
-import random,csv,sys,os,math
+import random,csv,os,math
 from operator import itemgetter
 
 
@@ -7,7 +7,7 @@ as_is_ratio = (1/3)
 hybrid_ratio = (2/3)
 mutation_rate = 5 # precentage of soulutions to be mutate
 jobs_amount = 10
-max_generations = 100
+max_generations = 20
 no_imporve_threshold = 5
 
 def get_hybrid_mask_list(jobs_amount=jobs_amount):
@@ -21,19 +21,14 @@ hybrid_mask = get_hybrid_mask_list() #For example: [1,0,0,0,1,0,0,1,0,1]
 
 # Files and directory:
 vectors_initial_data = "data\\vectors_initial_data.csv"
+output_path = "data\\output_best_vectors.csv"
+jobs_data = "data\\jobs_data.csv"
 
 # Ensures data directory exists
 directory = os.path.dirname(vectors_initial_data)
 if not os.path.exists(directory):
     os.makedirs(directory)
 
-# Get the command-line arguments
-# arguments = sys.argv
-# if(arguments):
-#     jobs_data = arguments[0]
-# else:
-
-jobs_data = "data\\jobs_data.csv"
 
 def get_vector_array_by_id(vector_id, file_name=vectors_initial_data):
     with open(file_name, 'r') as file:
@@ -51,15 +46,15 @@ def get_randomize_jobs(jobs_amount=jobs_amount):
     random.shuffle(jobs_list)
     return jobs_list
 
-def set_input_data(fresh_list,random_vectors,clean_list = False):
-
-    def export_list(data_list,file_name = vectors_initial_data,clean_csv=False):
+def export_list(data_list,file_name = vectors_initial_data,clean_csv=False):
         operation = 'a' # append
         if clean_csv: operation = 'w'
         with open(file_name, operation ,newline='') as file:
             writer = csv.writer(file)
             if data_list:
                 writer.writerow(data_list)
+
+def set_input_data(fresh_list,random_vectors,clean_list = False):
 
     if clean_list and fresh_list:
         #clean the exsiting list:
@@ -283,7 +278,10 @@ vectors = int(input("Specify how many job vectors you want to add: "))
 if vectors!=0 : set_input_data(fresh_list=[],random_vectors=vectors)
 
 generation_counter = 0
+prv_days_late = 100000000000
+previos_solution ={'vector': [], 'days_late': prv_days_late}
 
+output_result_data = []
 while generation_counter < max_generations:
     main_arr = read_csv_to_array()
     # print(f"Original Array: {main_arr}")
@@ -291,10 +289,17 @@ while generation_counter < max_generations:
     ranked = get_ranked_array(main_arr)
     # print(f"Ranked Array: {ranked}")
 
+    if generation_counter !=0:
+        previos_solution = best_solution
+        prv_days_late = best_solution["days_late"]
 
     best_solution = get_best_solution(ranked)
-    print(f"best_solution: {best_solution}")
-    best_solution = best_solution["days_late"]
+    if previos_solution != best_solution and prv_days_late >= best_solution["days_late"]:
+        print(f"best_solution: {best_solution}")
+        output_result_data.append(best_solution["vector"])
+    else:
+        best_solution = previos_solution
+
 
     rank_sum = get_rank_sum_of__ranked_array(ranked)
     # print(f"Rank Sum: {rank_sum}")
@@ -308,26 +313,5 @@ while generation_counter < max_generations:
     set_input_data(fresh_list = new_gen_array,clean_list=True,random_vectors=0)
     generation_counter += 1
 
-
-############################## TESTS ##############################
-
-# ranJobs0 = get_randomize_jobs()
-# ranJobs1 = get_randomize_jobs()
-# print(f"Jobs0 random list: {ranJobs0}")
-# print(f"Jobs1 random list: {ranJobs1}")
-
-# print(f"hybrid mask is: {hybrid_mask}")
-
-# hyb = get_hybrid_vector(ranJobs0,ranJobs1)
-# print(f"Hybrid list: {hyb}")
-
-# print(f"Days late: {get_total_days_late(ranJobs)}")
-
-# encoded_list = encode_jobs_vector([2,1,6,4,5,3])
-# print(f"Encoded list: {encoded_list}")
-## Expect > Encoded list: [1, 0, 3, 1, 1, 0]
-
-
-# decoded_list = decode_jobs_vector(encoded_list)
-# print(f"Decoded list: {decoded_list}")
-## Expect > Decoded list: [2, 1, 6, 4, 5, 3]
+for item in output_result_data:
+    export_list(item,output_path)
